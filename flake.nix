@@ -17,8 +17,7 @@
         platformio
         platformio-core.udev
         libusb1
-
-        screen
+        llvmPackages_20.clang-tools
 
       ];
 
@@ -31,7 +30,6 @@
       # Cleaner shell initialization (avoids 'exec' potential issues)
       shellHook = ''
         echo "Entering PlatformIO environment"
-        ${pkgs.fish}/bin/fish
       '';
     };
   };

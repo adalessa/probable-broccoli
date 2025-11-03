@@ -1,0 +1,16 @@
+#pragma once
+
+#include <cstdint>
+
+enum class Font : uint8_t {
+  x6x12 = 0x00,
+  x8x16 = 0x01,
+  x10x20 = 0x02,
+  x12x24 = 0x03,
+  x14x28 = 0x04,
+  x16x32 = 0x05,
+  x20x40 = 0x06,
+  x24x48 = 0x07,
+  x28x56 = 0x08,
+  x32x64 = 0x09
+};
