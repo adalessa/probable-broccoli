@@ -1,6 +1,5 @@
 #include "LcdApi.h"
 #include "IEncodeable.h"
-#include "Rect.h"
 
 void LcdApi::initialize(Rotation rot, Color color) {
   delay(800);
@@ -12,12 +11,7 @@ void LcdApi::initialize(Rotation rot, Color color) {
 
   update();
   rotation(rot);
-
-  if (rot % 2 == 0) {
-    send(Rect().color(color).start(0, 0).end(LCD_WIDTH, LCD_HEIGHT));
-  } else {
-    send(Rect().color(color).start(0, 0).end(LCD_HEIGHT, LCD_WIDTH));
-  }
+  clear(color);
 }
 
 void LcdApi::rotation(Rotation rot) {
@@ -30,7 +24,15 @@ void LcdApi::rotation(Rotation rot) {
   update();
 }
 
-void LcdApi::send(const IEncodeable &buffer) {
+void LcdApi::clear(Color color) {
+  add_byte(0x01);
+  add_byte(color >> 8);
+  add_byte(color & 0xFF);
+  send_();
+  update();
+}
+
+void LcdApi::draw(const IEncodeable &buffer) {
   // get the buffer and copy properly to
   std::vector<uint8_t> data = buffer.encode();
   for (uint8_t byte : data) {

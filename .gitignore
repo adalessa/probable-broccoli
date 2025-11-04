@@ -4,3 +4,4 @@ compile_commands.json
 .framework
 .ccls
 .direnv
+compile_commands.json.bak

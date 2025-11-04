@@ -43,5 +43,6 @@ private:
 public:
   void initialize(Rotation rot, Color color);
   void rotation(Rotation rot);
-  void send(const IEncodeable &buffer);
+  void clear(Color color);
+  void draw(const IEncodeable &buffer);
 };
