@@ -1,6 +1,7 @@
 #include "TasksComponent.h"
 #include "Rect.h"
 #include "Text.h"
+#include "WiFi.h"
 #include <algorithm>
 
 TasksComponent::TasksComponent(LcdApi &lcd, Input &input) : lcd(lcd) {
@@ -44,6 +45,12 @@ void TasksComponent::draw() {
   lcd.draw(Text(tasks)
                .color(Color::Black)
                .position(LCD_WIDTH - (tasks.length() * 12), 0));
+
+  if (WiFi.status() == WL_CONNECTED) {
+    lcd.draw(Text("[WiFi]")
+                 .color(Color::Black)
+                 .position(LCD_WIDTH - (tasks.length() * 12) - (6 * 12), 0));
+  }
 
   for (size_t i = 0; i < tasks_.size(); ++i) {
     const Task &task = tasks_[i];

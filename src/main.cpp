@@ -1,11 +1,13 @@
 #include "App.h"
 #include "Color.h"
 #include "Input.h"
+#include "KlipperComponent.h"
 #include "LcdApi.h"
 #include "Rotation.h"
 #include "TasksComponent.h"
 #include <AiEsp32RotaryEncoder.h>
 #include <Arduino.h>
+#include <WiFi.h>
 
 // ========== ENCODER CONFIG ==========
 #define ROTARY_ENCODER_A_PIN 33
@@ -21,6 +23,10 @@ AiEsp32RotaryEncoder rotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN,
 
 void IRAM_ATTR readEncoderISR() { rotaryEncoder.readEncoder_ISR(); }
 
+// ========== WIFI CONFIG ==========
+const char *ssid = "No Muggles Allowed";
+const char *password = "98567928771545224286";
+
 // ========== GLOBAL OBJECTS ==========
 LcdApi lcd;
 App *app;
@@ -33,10 +39,24 @@ void TaskUI(void *pvParameters) {
   }
 }
 
+void setupWifi() {
+    WiFi.begin(ssid, password);
+    Serial.println("Connecting to WiFi...");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("\nConnected to WiFi");
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+}
+
 void setup() {
   Serial.begin(115200);
   lcd.initialize(Rotation::ROTATION_0, Color::Black);
   app = new App(lcd);
+
+  setupWifi();
 
   rotaryEncoder.begin();
   rotaryEncoder.setup(readEncoderISR);
@@ -44,7 +64,8 @@ void setup() {
   input.setEncoder(&rotaryEncoder);
 
 
-  app->setComponent(new TasksComponent(lcd, input));
+  // app->setComponent(new TasksComponent(lcd, input));
+  app->setComponent(new KlipperComponent(lcd));
   // Start UI task on Core 1
   xTaskCreatePinnedToCore(TaskUI, "TaskUI", 8192, NULL, 1, NULL, 1);
 }
