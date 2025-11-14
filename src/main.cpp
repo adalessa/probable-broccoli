@@ -4,7 +4,6 @@
 #include "KlipperComponent.h"
 #include "LcdApi.h"
 #include "Rotation.h"
-#include "TasksComponent.h"
 #include <AiEsp32RotaryEncoder.h>
 #include <Arduino.h>
 #include <WiFi.h>
@@ -40,15 +39,15 @@ void TaskUI(void *pvParameters) {
 }
 
 void setupWifi() {
-    WiFi.begin(ssid, password);
-    Serial.println("Connecting to WiFi...");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("\nConnected to WiFi");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi...");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConnected to WiFi");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
 }
 
 void setup() {
@@ -62,7 +61,6 @@ void setup() {
   rotaryEncoder.setup(readEncoderISR);
   rotaryEncoder.setBoundaries(-100000, 100000, false);
   input.setEncoder(&rotaryEncoder);
-
 
   // app->setComponent(new TasksComponent(lcd, input));
   app->setComponent(new KlipperComponent(lcd));

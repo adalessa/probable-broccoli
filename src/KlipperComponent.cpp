@@ -25,12 +25,12 @@ void KlipperComponent::draw() {
   // format numbers with 1 decimal place manually
   auto toFixed = [](float value, int decimals = 1) {
     char buf[16];
-    snprintf(buf, sizeof(buf), "%3.*f", decimals, value);
+    snprintf(buf, sizeof(buf), "%4.*f", decimals, value);
     return std::string(buf);
   };
 
   std::string printLine =
-      toFixed(printProgress_ * 100, 0) + "% (" + printState_ + ")";
+      toFixed(printProgress_ * 100, 0) + "% (" + printState_ + ")    ";
 
   lcd.draw(Text(printLine)
                .color(Color::White)
@@ -45,12 +45,12 @@ void KlipperComponent::draw() {
   lcd.draw(Text(extLine)
                .color(Color::White)
                .background(Color::Black)
-               .position(30, 60));
+               .position(35, 60));
   lcd.draw(Icon(IcondId::BedTemp).position(5, 93));
   lcd.draw(Text(bedLine)
                .color(Color::White)
                .background(Color::Black)
-               .position(30, 90));
+               .position(35, 90));
 }
 
 void KlipperComponent::fetchData() {
