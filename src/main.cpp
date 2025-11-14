@@ -63,8 +63,11 @@ void setup() {
   input.setEncoder(&rotaryEncoder);
 
   // app->setComponent(new TasksComponent(lcd, input));
-  std::vector<std::string> printerIps = {"10.27.22.60", "10.27.22.61"};
-  app->setComponent(new KlipperComponent(lcd, printerIps));
+  std::vector<PrinterConfig> printers = {
+    {"10.27.22.60", "Silent"},
+    {"10.27.22.61", "Sprite"}
+  };
+  app->setComponent(new KlipperComponent(lcd, printers));
   // Start UI task on Core 1
   xTaskCreatePinnedToCore(TaskUI, "TaskUI", 8192, NULL, 1, NULL, 1);
 }

@@ -7,17 +7,11 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 
-KlipperComponent::KlipperComponent(LcdApi &lcd, const std::vector<std::string> &printerIps) : lcd(lcd) {
-  for (const auto &ip : printerIps) {
+KlipperComponent::KlipperComponent(LcdApi &lcd, const std::vector<PrinterConfig> &printerConfigs) : lcd(lcd) {
+  for (const auto &cfg : printerConfigs) {
     PrinterInfo info;
-    info.ip = ip;
-    if (ip == "10.27.22.60") {
-      info.name = "Silent";
-    } else if (ip == "10.27.22.61") {
-      info.name = "Sprite";
-    } else {
-      info.name = ip; // fallback to IP if unknown
-    }
+    info.ip = cfg.ip;
+    info.name = cfg.name;
     printers.push_back(info);
   }
 }
@@ -61,6 +55,13 @@ void KlipperComponent::draw() {
                  .color(Color::White)
                  .background(Color::Black)
                  .position(xOffset, 30));
+
+    // Layer progression at the bottom
+    std::string layerLine = "Layer: " + std::to_string(printer.currentLayer) + "/" + std::to_string(printer.totalLayer);
+    lcd.draw(Text(layerLine)
+                 .color(Color::White)
+                 .background(Color::Black)
+                 .position(xOffset, 120));
 
     std::string bedLine = toFixed(printer.bedTemp) + "/" + toFixed(printer.bedTarget, 0);
     std::string extLine =
@@ -110,6 +111,11 @@ void KlipperComponent::fetchData() {
         if (status["print_stats"].is<JsonObject>()) {
           JsonObject stats = status["print_stats"];
           printer.printState = stats["state"].as<const char *>();
+          if (stats["info"].is<JsonObject>()) {
+            JsonObject info = stats["info"];
+            printer.currentLayer = info["current_layer"] | 0;
+            printer.totalLayer = info["total_layer"] | 0;
+          }
         }
         if (status["display_status"].is<JsonObject>()) {
           JsonObject displayStatus = status["display_status"];
