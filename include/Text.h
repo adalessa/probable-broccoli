@@ -17,7 +17,8 @@ public:
   Text &background(Color bc);
   Text &font(Font f);
   Text &position(uint16_t x, uint16_t y);
-  Text(const std::string &s);
+  Text(const std::string &s, uint16_t displayWidth = 0);
+  Text &displayWidth(uint16_t w);
 
   std::vector<uint8_t> encode() const override;
 private:
@@ -26,4 +27,5 @@ private:
   Font font_{Font::x12x24};
   uint16_t x_{0}, y_{0};
   std::string string_{""};
+  uint16_t displayWidth_{0};
 };

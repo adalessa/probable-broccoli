@@ -1,4 +1,5 @@
 #include "KlipperComponent.h"
+#include "AppState.h"
 #include "Icon.h"
 #include "IcondId.h"
 #include "Input.h"
@@ -7,7 +8,9 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 
-KlipperComponent::KlipperComponent(LcdApi &lcd, const std::vector<PrinterConfig> &printerConfigs) : lcd(lcd) {
+KlipperComponent::KlipperComponent(
+    LcdApi &lcd, const std::vector<PrinterConfig> &printerConfigs)
+    : lcd(lcd) {
   for (const auto &cfg : printerConfigs) {
     PrinterInfo info;
     info.ip = cfg.ip;
@@ -19,7 +22,7 @@ KlipperComponent::KlipperComponent(LcdApi &lcd, const std::vector<PrinterConfig>
 void KlipperComponent::update(Input input) {
   fetchData();
   bool anyNeedsUpdate = false;
-  for (const auto& printer : printers) {
+  for (const auto &printer : printers) {
     if (printer.needsUpdate) {
       anyNeedsUpdate = true;
       break;
@@ -27,7 +30,7 @@ void KlipperComponent::update(Input input) {
   }
   if (anyNeedsUpdate) {
     draw();
-    for (auto& printer : printers) {
+    for (auto &printer : printers) {
       printer.needsUpdate = false;
     }
   }
@@ -37,11 +40,14 @@ void KlipperComponent::draw() {
   int printerCount = printers.size();
   int widthPerPrinter = LCD_WIDTH / printerCount;
   for (int i = 0; i < printerCount; ++i) {
-    auto& printer = printers[i];
-    if (!printer.needsUpdate) continue; // Only update if needed
+    auto &printer = printers[i];
+    if (!printer.needsUpdate)
+      continue; // Only update if needed
     int xOffset = i * widthPerPrinter;
-    // lcd.draw(Rect().color(Color::DarkGreen).start(xOffset, 0).end(xOffset + widthPerPrinter, 24));
-    lcd.draw(Text(printer.name).color(Color::DarkGreen).position(xOffset + 5, 0));
+    // lcd.draw(Rect().color(Color::DarkGreen).start(xOffset, 0).end(xOffset +
+    // widthPerPrinter, 24));
+    lcd.draw(
+        Text(printer.name).color(Color::DarkGreen).position(xOffset + 5, 0));
 
     auto toFixed = [](float value, int decimals = 1) {
       char buf[16];
@@ -49,35 +55,47 @@ void KlipperComponent::draw() {
       return std::string(buf);
     };
 
-    std::string printLine =
-        toFixed(printer.printProgress * 100, 0) + "% (" + printer.printState + ")    ";
+    std::string printLine = toFixed(printer.printProgress * 100, 0) + "% (" +
+                            printer.printState + ")    ";
     lcd.draw(Text(printLine)
+                 .displayWidth(widthPerPrinter / 12)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(xOffset, 30));
 
     // Layer progression at the bottom
-    std::string layerLine = "Layer: " + std::to_string(printer.currentLayer) + "/" + std::to_string(printer.totalLayer);
+    std::string layerLine = "Layer: " + std::to_string(printer.currentLayer) +
+                            "/" + std::to_string(printer.totalLayer);
     lcd.draw(Text(layerLine)
+                 .displayWidth(widthPerPrinter / 12)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(xOffset, 120));
 
-    std::string bedLine = toFixed(printer.bedTemp) + "/" + toFixed(printer.bedTarget, 0);
-    std::string extLine =
-        toFixed(printer.extruderTemp) + "/" + toFixed(printer.extruderTarget, 0);
+    std::string bedLine =
+        toFixed(printer.bedTemp) + "/" + toFixed(printer.bedTarget, 0);
+    std::string extLine = toFixed(printer.extruderTemp) + "/" +
+                          toFixed(printer.extruderTarget, 0);
 
     lcd.draw(Icon(IcondId::HotendTemp).position(xOffset + 5, 63));
     lcd.draw(Text(extLine)
+                 .displayWidth((widthPerPrinter / 12) - 3)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(xOffset + 35, 60));
     lcd.draw(Icon(IcondId::BedTemp).position(xOffset + 5, 93));
     lcd.draw(Text(bedLine)
+                 .displayWidth((widthPerPrinter / 12) - 3)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(xOffset + 35, 90));
     printer.needsUpdate = false;
+
+    lcd.draw(Text("counter:      " + std::to_string(appState.counter))
+                 .displayWidth(widthPerPrinter / 12)
+                 .color(Color::White)
+                 .background(Color::Black)
+                 .position(xOffset, 150)); // Clear line
   }
 }
 
@@ -88,7 +106,9 @@ void KlipperComponent::fetchData() {
     printer.lastUpdate = millis();
 
     HTTPClient http;
-    std::string url = "http://" + printer.ip + "/printer/objects/query?heater_bed&extruder&print_stats&display_status";
+    std::string url =
+        "http://" + printer.ip +
+        "/printer/objects/query?heater_bed&extruder&print_stats&display_status";
     http.begin(url.c_str());
     int httpCode = http.GET();
 

@@ -1,5 +1,8 @@
 #include "App.h"
+#include "AppState.h"
 #include "Color.h"
+#include "HelloWorldComponent.h"
+#include "HttpServer.h"
 #include "Input.h"
 #include "KlipperComponent.h"
 #include "LcdApi.h"
@@ -30,10 +33,25 @@ const char *password = "98567928771545224286";
 LcdApi lcd;
 App *app;
 Input input;
+AppState appState;
+HttpServerTask httpServer;
 
 void TaskUI(void *pvParameters) {
   for (;;) {
     app->update(input);
+    delay(10);
+  }
+}
+
+void TaskHttpServer(void *pvParameters) {
+  // Wait until WiFi is connected (in case UI task starts first)
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+  }
+
+  httpServer.begin();
+  for (;;) {
+    httpServer.handleLoop();
     delay(10);
   }
 }
@@ -63,12 +81,15 @@ void setup() {
   input.setEncoder(&rotaryEncoder);
 
   // app->setComponent(new TasksComponent(lcd, input));
-  std::vector<PrinterConfig> printers = {
-    {"10.27.22.60", "Silent"},
-    {"10.27.22.61", "Sprite"}
-  };
-  app->setComponent(new KlipperComponent(lcd, printers));
+  // std::vector<PrinterConfig> printers = {{"10.27.22.60", "Silent"},
+  //                                        {"10.27.22.61", "Sprite"}};
+  // app->setComponent(new KlipperComponent(lcd, printers));
+  app->setComponent(new HelloWorldComponent(lcd));
   // Start UI task on Core 1
   xTaskCreatePinnedToCore(TaskUI, "TaskUI", 8192, NULL, 1, NULL, 1);
+
+  // Start HTTP server task on Core 0
+  xTaskCreatePinnedToCore(TaskHttpServer, "TaskHttpServer", 8192, NULL, 1, NULL,
+                          0);
 }
 void loop() {}
