@@ -1,14 +1,14 @@
 #pragma once
 
-#include "IComponent.h"
-#include "LcdApi.h"
+#include "BaseComponent.h"
 
-class HelloWorldComponent : public IComponent {
+class HelloWorldComponent : public BaseComponent {
 public:
-  HelloWorldComponent(LcdApi &lcd) : lcd(lcd) {}
+  HelloWorldComponent(LcdApi &lcd, AppState &state);
   void update(Input input) override;
 
 private:
-  LcdApi &lcd;
   bool needsDraw = true;
+  int previousCounter = 0;
 };
+

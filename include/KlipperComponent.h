@@ -1,8 +1,6 @@
 #pragma once
-
-#include "IComponent.h"
+#include "BaseComponent.h"
 #include "Input.h"
-#include "LcdApi.h"
 #include <vector>
 #include <string>
 
@@ -26,14 +24,14 @@ struct PrinterInfo {
   bool needsUpdate = true;
 };
 
-class KlipperComponent : public IComponent {
+class KlipperComponent : public BaseComponent {
 public:
-  KlipperComponent(LcdApi &lcd, const std::vector<PrinterConfig> &printerConfigs);
+  KlipperComponent(LcdApi &lcd, AppState &state, const std::vector<PrinterConfig> &printerConfigs);
   void update(Input input) override;
 
 private:
-  LcdApi &lcd;
   std::vector<PrinterInfo> printers;
   void draw();
   void fetchData();
 };
+

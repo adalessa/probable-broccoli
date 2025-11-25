@@ -1,10 +1,7 @@
 #include "App.h"
-#include "AppState.h"
 #include "Color.h"
-#include "HelloWorldComponent.h"
 #include "HttpServer.h"
 #include "Input.h"
-#include "KlipperComponent.h"
 #include "LcdApi.h"
 #include "Rotation.h"
 #include <AiEsp32RotaryEncoder.h>
@@ -33,8 +30,7 @@ const char *password = "98567928771545224286";
 LcdApi lcd;
 App *app;
 Input input;
-AppState appState;
-HttpServerTask httpServer;
+HttpServerTask *httpServer;
 
 void TaskUI(void *pvParameters) {
   for (;;) {
@@ -49,9 +45,9 @@ void TaskHttpServer(void *pvParameters) {
     delay(500);
   }
 
-  httpServer.begin();
+  httpServer->begin();
   for (;;) {
-    httpServer.handleLoop();
+    httpServer->handleLoop();
     delay(10);
   }
 }
@@ -73,6 +69,8 @@ void setup() {
   lcd.initialize(Rotation::ROTATION_0, Color::Black);
   app = new App(lcd);
 
+  httpServer = new HttpServerTask(*app);
+
   setupWifi();
 
   rotaryEncoder.begin();
@@ -80,11 +78,8 @@ void setup() {
   rotaryEncoder.setBoundaries(-100000, 100000, false);
   input.setEncoder(&rotaryEncoder);
 
-  // app->setComponent(new TasksComponent(lcd, input));
-  // std::vector<PrinterConfig> printers = {{"10.27.22.60", "Silent"},
-  //                                        {"10.27.22.61", "Sprite"}};
-  // app->setComponent(new KlipperComponent(lcd, printers));
-  app->setComponent(new HelloWorldComponent(lcd));
+  app->changeMode(AppMode::Klipper);
+
   // Start UI task on Core 1
   xTaskCreatePinnedToCore(TaskUI, "TaskUI", 8192, NULL, 1, NULL, 1);
 

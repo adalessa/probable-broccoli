@@ -4,7 +4,8 @@ CompileFlags:
     -DLWIP_NO_UNISTD_H=1,
     -Dssize_t=long,
     -D_SSIZE_T_DECLARED,
-    -Wno-unknown-warning-option
+    -Wno-unknown-warning-option,
+    -include,include/ClangdPthreadWorkarounds.h
   ]
   Remove: [
     -mlong-calls,

@@ -3,20 +3,21 @@
 #include "Icon.h"
 #include "IcondId.h"
 #include "Input.h"
-#include "Rect.h"
 #include "Text.h"
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 
 KlipperComponent::KlipperComponent(
-    LcdApi &lcd, const std::vector<PrinterConfig> &printerConfigs)
-    : lcd(lcd) {
+    LcdApi &lcd, AppState &state,
+    const std::vector<PrinterConfig> &printerConfigs)
+    : BaseComponent(lcd, state) {
   for (const auto &cfg : printerConfigs) {
     PrinterInfo info;
     info.ip = cfg.ip;
     info.name = cfg.name;
     printers.push_back(info);
   }
+  lcd.clear(Color::Black);
 }
 
 void KlipperComponent::update(Input input) {
@@ -44,8 +45,6 @@ void KlipperComponent::draw() {
     if (!printer.needsUpdate)
       continue; // Only update if needed
     int xOffset = i * widthPerPrinter;
-    // lcd.draw(Rect().color(Color::DarkGreen).start(xOffset, 0).end(xOffset +
-    // widthPerPrinter, 24));
     lcd.draw(
         Text(printer.name).color(Color::DarkGreen).position(xOffset + 5, 0));
 
@@ -90,12 +89,6 @@ void KlipperComponent::draw() {
                  .background(Color::Black)
                  .position(xOffset + 35, 90));
     printer.needsUpdate = false;
-
-    lcd.draw(Text("counter:      " + std::to_string(appState.counter))
-                 .displayWidth(widthPerPrinter / 12)
-                 .color(Color::White)
-                 .background(Color::Black)
-                 .position(xOffset, 150)); // Clear line
   }
 }
 
