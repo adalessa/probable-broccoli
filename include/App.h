@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "KlipperComponent.h"
 #include "LcdApi.h"
+#include "MessageComponent.h"
 #include "Text.h"
 
 class App {
@@ -14,7 +15,7 @@ public:
   void update(Input input) {
     // can handle here some menu if I want like a pause menu
     if (input.getEncoder()->isEncoderButtonClicked()) {
-        // can activate menu, and wait there without calling the component
+      // can activate menu, and wait there without calling the component
     }
     if (component) {
       component->update(input);
@@ -22,6 +23,8 @@ public:
       lcd.draw(Text("No component set").color(Color::Red).position(10, 10));
     }
   }
+
+  AppMode getMode() const { return appMode; }
 
   void changeMode(AppMode mode) {
     switch (mode) {
@@ -37,13 +40,16 @@ public:
     case AppMode::Tasks:
       setComponent(new HelloWorldComponent(lcd, getState()));
       break;
+    case AppMode::Message:
+      setComponent(new MessageComponent(lcd, getState()));
+      break;
     default:
       setComponent(nullptr);
     }
     appMode = mode;
   }
 
-  App(LcdApi &lcdApi) : lcd(lcdApi) {}
+  App(LcdApi &lcdApi) : lcd(lcdApi) { state.setMessage("Hola Mundo"); }
 
   AppState &getState() { return state; }
 

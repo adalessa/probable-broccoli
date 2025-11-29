@@ -7,6 +7,7 @@ class AppState {
 private:
   int counter = 1;
   std::string hash;
+  std::string message;
   mutable std::mutex mtx;
 public:
   int getCounter() const {
@@ -24,5 +25,14 @@ public:
   void setHash(const std::string& h) {
     std::lock_guard<std::mutex> lock(mtx);
     hash = h;
+  }
+
+  std::string getMessage() const {
+    std::lock_guard<std::mutex> lock(mtx);
+    return message;
+  }
+  void setMessage(const std::string& m) {
+    std::lock_guard<std::mutex> lock(mtx);
+    message = m;
   }
 };

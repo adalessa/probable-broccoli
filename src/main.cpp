@@ -78,7 +78,7 @@ void setup() {
   rotaryEncoder.setBoundaries(-100000, 100000, false);
   input.setEncoder(&rotaryEncoder);
 
-  app->changeMode(AppMode::Klipper);
+  app->changeMode(AppMode::Message);
 
   // Start UI task on Core 1
   xTaskCreatePinnedToCore(TaskUI, "TaskUI", 8192, NULL, 1, NULL, 1);
