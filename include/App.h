@@ -12,17 +12,18 @@
 
 class App {
 public:
-  void update(Input input) {
-    // can handle here some menu if I want like a pause menu
-    if (input.getEncoder()->isEncoderButtonClicked()) {
-      // can activate menu, and wait there without calling the component
-    }
-    if (component) {
-      component->update(input);
-    } else {
-      lcd.draw(Text("No component set").color(Color::Red).position(10, 10));
-    }
-  }
+   void update(Input input) {
+     // can handle here some menu if I want like a pause menu
+     if (input.getEncoder()->isEncoderButtonClicked()) {
+       // can activate menu, and wait there without calling the component
+     }
+
+     if (component) {
+       component->update(input);
+     } else {
+       lcd.draw(Text("No component set").color(Color::Red).position(10, 10));
+     }
+   }
 
   AppMode getMode() const { return appMode; }
 

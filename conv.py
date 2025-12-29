@@ -89,6 +89,7 @@ def parse_ccls():
 
 def generate_single_entry_compile_command(compiler, flags):
     # Quote flags with shlex.quote so paths with spaces are a single shell token
+    print("processing")
     quoted_flags = [shlex.quote(f) for f in flags]
     cmd = " ".join([compiler] + quoted_flags + [str(SRC_FILE)])
     entry = {
@@ -105,3 +106,4 @@ ensure_compile_commands()
 compiler_path = extract_compiler()
 filtered_flags = parse_ccls()
 entry_count = generate_single_entry_compile_command(compiler_path, filtered_flags)
+print("done")

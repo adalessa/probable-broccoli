@@ -40,13 +40,15 @@ void KlipperComponent::update(Input input) {
 void KlipperComponent::draw() {
   int printerCount = printers.size();
   int widthPerPrinter = LCD_WIDTH / printerCount;
+  int yOffset = 50;
   for (int i = 0; i < printerCount; ++i) {
     auto &printer = printers[i];
     if (!printer.needsUpdate)
       continue; // Only update if needed
-    int xOffset = i * widthPerPrinter;
-    lcd.draw(
-        Text(printer.name).color(Color::DarkGreen).position(xOffset + 5, 0));
+    int xOffset = (i * widthPerPrinter) + 10;
+    lcd.draw(Text(printer.name)
+                 .color(Color::DarkGreen)
+                 .position(xOffset + 5, yOffset + 0));
 
     auto toFixed = [](float value, int decimals = 1) {
       char buf[16];
@@ -60,7 +62,7 @@ void KlipperComponent::draw() {
                  .displayWidth(widthPerPrinter / 12)
                  .color(Color::White)
                  .background(Color::Black)
-                 .position(xOffset, 30));
+                 .position(xOffset, yOffset + 30));
 
     // Layer progression at the bottom
     std::string layerLine = "Layer: " + std::to_string(printer.currentLayer) +
@@ -69,25 +71,25 @@ void KlipperComponent::draw() {
                  .displayWidth(widthPerPrinter / 12)
                  .color(Color::White)
                  .background(Color::Black)
-                 .position(xOffset, 120));
+                 .position(xOffset, yOffset + 120));
 
     std::string bedLine =
         toFixed(printer.bedTemp) + "/" + toFixed(printer.bedTarget, 0);
     std::string extLine = toFixed(printer.extruderTemp) + "/" +
                           toFixed(printer.extruderTarget, 0);
 
-    lcd.draw(Icon(IcondId::HotendTemp).position(xOffset + 5, 63));
+    lcd.draw(Icon(IcondId::HotendTemp).position(xOffset + 5, yOffset + 63));
     lcd.draw(Text(extLine)
                  .displayWidth((widthPerPrinter / 12) - 3)
                  .color(Color::White)
                  .background(Color::Black)
-                 .position(xOffset + 35, 60));
-    lcd.draw(Icon(IcondId::BedTemp).position(xOffset + 5, 93));
+                 .position(xOffset + 35, yOffset + 60));
+    lcd.draw(Icon(IcondId::BedTemp).position(xOffset + 5, yOffset + 93));
     lcd.draw(Text(bedLine)
                  .displayWidth((widthPerPrinter / 12) - 3)
                  .color(Color::White)
                  .background(Color::Black)
-                 .position(xOffset + 35, 90));
+                 .position(xOffset + 35, yOffset + 90));
     printer.needsUpdate = false;
   }
 }
