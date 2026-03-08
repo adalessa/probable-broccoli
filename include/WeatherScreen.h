@@ -40,65 +40,65 @@ public:
                  .font(Font::x20x40)
                  .background(Color::Black)
                  .color(Color::DarkGray)
-                 .position(260, 80));
+                 .position(280, 80));
 
     lcd.draw(Text("C")
                  .font(Font::x20x40)
                  .background(Color::Black)
                  .color(Color::DarkGray)
-                 .position(260, 130));
+                 .position(280, 130));
 
     lcd.draw(Text("/")
                  .font(Font::x12x24)
                  .color(Color::DarkGray)
                  .background(Color::Black)
-                 .position(50, 180));
+                 .position(20 + (4 * 12), 180));
 
     lcd.draw(Text("Hrs de luz")
                  .font(Font::x12x24)
                  .color(Color::DarkGray)
                  .background(Color::Black)
-                 .position(20 + (4 * 12), 210));
+                 .position(20 + (5 * 12), 210));
   };
+  // Expects data as a flat DTO with keys: tempC, feelsLikeC, minTempC, maxTempC, sunHours, sunrise, sunset
   void updateData(JsonObject data) override {
-
-    lcd.draw(Text(data["current_condition"][0]["temp_C"].as<const char *>())
+    lcd.draw(Text(data["tempC"].as<const char *>())
                  .font(Font::x20x40)
                  .background(Color::Black)
                  .color(Color::White)
                  .position(200, 80));
 
-    lcd.draw(Text(data["current_condition"][0]["FeelsLikeC"].as<const char *>())
+    lcd.draw(Text(data["feelsLikeC"].as<const char *>())
                  .font(Font::x20x40)
                  .background(Color::Black)
                  .color(Color::White)
                  .position(200, 130));
 
-    lcd.draw(Text(data["weather"][0]["mintempC"].as<const char *>())
+    lcd.draw(Text(data["minTempC"].as<const char *>())
                  .font(Font::x12x24)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(20, 180));
 
-    lcd.draw(Text(data["weather"][0]["maxtempC"].as<const char *>())
+    lcd.draw(Text(data["maxTempC"].as<const char *>())
                  .font(Font::x12x24)
                  .color(Color::White)
                  .background(Color::Black)
-                 .position(68, 180));
+                 .position(80, 180));
 
-    lcd.draw(Text(data["weather"][0]["sunHour"].as<const char *>())
+    lcd.draw(Text(data["sunHours"].as<const char *>())
                  .font(Font::x12x24)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(20, 210));
 
-    lcd.draw(Text(data["weather"][0]["astronomy"][0]["sunrise"].as<const char *>())
+    lcd.draw(Text(data["sunrise"].as<const char *>())
                  .font(Font::x12x24)
                  .color(Color::White)
                  .background(Color::Black)
                  .position(360, 180));
 
-    lcd.draw(Text(data["weather"][0]["astronomy"][0]["sunset"].as<const char *>())
+    lcd.draw(Text(data["sunset"].as<const char *>())
                  .font(Font::x12x24)
                  .color(Color::White)
                  .background(Color::Black)
