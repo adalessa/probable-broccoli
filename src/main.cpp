@@ -11,6 +11,7 @@
 #include "Rotation.h"
 #include "StatusBar.h"
 #include "WeatherScreen.h"
+#include "DynamicScreen.h"
 #include <AiEsp32RotaryEncoder.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -67,6 +68,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
     break;
   case WStype_TEXT: {
     Serial.printf("[WSc] get text: %s\n", payload);
+    Serial.printf("[WSc] Current name : %s\n", screen->getName().c_str());
 
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, payload);
@@ -90,6 +92,13 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
         if (name == "weather") {
           if (!isRefresh || force) {
             screen = new WeatherScreen(lcd, webSocket);
+            screen->init();
+          }
+          screen->updateData(data);
+        }
+        if (name == "dynamic") {
+          if (!isRefresh || force) {
+            screen = new DynamicScreen(lcd, webSocket, data);
             screen->init();
           }
           screen->updateData(data);
@@ -163,7 +172,7 @@ void setup() {
   setupWebsocket();
 
   // set up the time
-  configTime(3600, 3600, "pool.ntp.org");
+  configTzTime("CET-1CEST,M3.5.0,M10.5.0", "pool.ntp.org");
 }
 
 void loop() {
